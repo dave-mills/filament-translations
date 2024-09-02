@@ -91,7 +91,7 @@ class Scan
             ')' . // Close group
             '[\"]' . // Closing quote
 
-            '[\)]'  // Close parentheses or new parameter
+            '[\)\,]'  // Close parentheses or new parameter
         ;
 
         $patternC =
@@ -108,7 +108,7 @@ class Scan
             ')' . // Close group
             '[\']' . // Closing quote
 
-            '[\)]'  // Close parentheses or new parameter
+            '[\)\,]'  // Close parentheses or new parameter
         ;
 
         $trans = collect();
