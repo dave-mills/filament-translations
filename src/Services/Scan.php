@@ -74,7 +74,7 @@ class Scan
             "([.][^\1)$]+)+" . // Be followed by one or more items/keys
             ')' . // Close group
             "[\'\"]" . // Closing quote
-            "[\),]"  // Close parentheses or new parameter
+            "[\)\,]"  // Close parentheses or new parameter
         ;
 
         $patternB =
@@ -86,10 +86,9 @@ class Scan
 
             '[\"]' . // Match "
             '(' . // Start a new group to match:
-            '[^"]+' . //Can have everything except "
-            //            '(?:[^"]|\\")+' . //Can have everything except " or can have escaped " like \", however it is not working as expected
+            '(?:[^"]|\\\")+' . //Can have everything except " or can have escaped " like \"
             ')' . // Close group
-            '[\"]' . // Closing quote
+            '(?<![\\\])[\"]' . // Closing unescaped quote
 
             '[\)\,]'  // Close parentheses or new parameter
         ;
@@ -103,10 +102,9 @@ class Scan
 
             '[\']' . // Match '
             '(' . // Start a new group to match:
-            "[^']+" . //Can have everything except '
-            //            "(?:[^']|\\')+" . //Can have everything except 'or can have escaped ' like \', however it is not working as expected
+            "(?:[^']|\\\')+" . //Can have everything except 'or can have escaped ' like \'
             ')' . // Close group
-            '[\']' . // Closing quote
+            '(?<![\\\])[\']' . // Closing unescaped quote
 
             '[\)\,]'  // Close parentheses or new parameter
         ;
