@@ -29,7 +29,7 @@ class TranslationResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'key';
 
-    protected static bool $isScopedToTenant  = false;
+    protected static bool $isScopedToTenant = false;
 
     public static function getNavigationLabel(): string
     {
@@ -76,7 +76,7 @@ class TranslationResource extends Resource
                 ->maxLength(255),
             \TomatoPHP\FilamentTranslationComponent\Components\Translation::make('text')
                 ->label(trans('filament-translations::translation.text'))
-                ->columnSpanFull()
+                ->columnSpanFull(),
 
         ]);
     }
@@ -100,9 +100,9 @@ class TranslationResource extends Resource
                             "text/x-c",
                             "text/comma-separated-values",
                             "inode/x-empty",
-                            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                         ])
-                        ->storeFiles(false)
+                        ->storeFiles(false),
                 ])
                 ->icon('heroicon-o-document-arrow-up')
                 ->color('success')
@@ -127,6 +127,9 @@ class TranslationResource extends Resource
                     ->label(trans('filament-translations::translation.text'))
                     ->view('filament-translations::text-column')
                     ->searchable(),
+                Tables\Columns\IconColumn::make('is_reviewed')
+                    ->label(trans('filament-translations::translation.is_reviewed'))
+                    ->boolean(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -137,12 +140,18 @@ class TranslationResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-               Tables\Filters\SelectFilter::make('group')
-                   ->label(trans('filament-translations::global.filter_by_group'))
-                   ->options(fn (): array => LanguageLine::query()->groupBy('group')->pluck('group','group')->all()),
+                Tables\Filters\SelectFilter::make('group')
+                    ->label(trans('filament-translations::global.filter_by_group'))
+                    ->options(fn(): array => LanguageLine::query()->groupBy('group')->pluck('group', 'group')->all()),
                 Tables\Filters\Filter::make('text')
                     ->label(trans('filament-translations::global.filter_by_null_text'))
-                    ->query(fn (Builder $query): Builder => $query->whereJsonContains('text',  []))
+                    ->query(fn(Builder $query): Builder => $query->whereJsonContains('text', [])),
+                Tables\Filters\TernaryFilter::make('reviewed')
+                    ->label(trans('filament-translations::global.filter_by_reviewed'))
+                    ->queries(
+                        true: fn(Builder $query): Builder => $query->whereJsonContains('metadata', ['is_reviewed' => true]),
+                        false: fn(Builder $query): Builder => $query->whereJsonContains('metadata', ['is_reviewed' => false])->orWhereNull('metadata->is_reviewed')
+                    ),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -150,17 +159,24 @@ class TranslationResource extends Resource
                 ]),
             ]);
 
+        $validateAction = Tables\Actions\Action::make('validate')
+            ->icon(fn(Translation $record) => $record->is_reviewed ? 'heroicon-o-x-circle' : 'heroicon-o-check-circle')
+            ->color(fn(Translation $record) => $record->is_reviewed ? 'warning' : 'success')
+            ->label(fn(Translation $record) => $record->is_reviewed ? 'Mark as not reviewed' : 'Mark as reviewed')
+            ->action(fn(Translation $record) => $record->update(['metadata' => ['is_reviewed' => !$record->is_reviewed]]));
+
         if (!config('filament-translations.modal')) {
             $table->actions([
                 ActionGroup::make([
                     ViewAction::make(),
+                    $validateAction,
                     EditAction::make(),
-                    DeleteAction::make()
+                    DeleteAction::make(),
                 ]),
             ]);
-        }
-        else {
+        } else {
             $table->actions([
+                $validateAction,
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
             ]);

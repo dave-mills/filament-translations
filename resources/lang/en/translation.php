@@ -21,6 +21,7 @@ return [
     "clear" => "Clear All Translations",
     "key" => "Key",
     "text" => "Text",
+    "is_validated" => "Translation is validated?",
     "scan" => "Scan For New Languages",
     "namespace" => "Namespace",
     "notification" => "Language has been changed successfully",

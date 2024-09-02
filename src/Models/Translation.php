@@ -2,6 +2,7 @@
 
 namespace TomatoPHP\FilamentTranslations\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Support\Facades\Cache;
 use Spatie\TranslationLoader\LanguageLine;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -18,7 +19,10 @@ class Translation extends LanguageLine
     public $guarded = ['id'];
 
     /** @var array */
-    protected $casts = ['text' => 'array'];
+    protected $casts = [
+        'text' => 'array',
+        'metadata' => 'array',
+    ];
 
     protected $table = "language_lines";
 
@@ -55,5 +59,29 @@ class Translation extends LanguageLine
     protected function getTranslatedLocales(): array
     {
         return array_keys($this->text);
+    }
+
+    public function isReviewed(): Attribute
+    {
+        return new Attribute(
+            get: function (): bool {
+                return array_key_exists('is_reviewed', $this->metadata ?? []) && $this->metadata['is_reviewed'] === true;
+            },
+            set: function ($value): void {
+                $this->metadata = array_merge($this->metadata ?? [], ['is_reviewed' => $value]);
+            }
+        );
+    }
+
+    public function reviewedBy(): Attribute
+    {
+        return new Attribute(
+            get: function(): ?int {
+                return array_key_exists('reviewed_by', $this->metadata) ? $this->metadata['reviewed_by'] : null;
+            },
+            set: function($value): void {
+                $this->metadata = array_merge($this->metadata ?? [], ['reviewed_by' => $value]);
+            }
+        );
     }
 }
