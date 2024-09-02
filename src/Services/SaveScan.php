@@ -68,7 +68,7 @@ class SaveScan
             ->where('key', $key)
             ->first();
 
-        $defaultLocale = config('app.locale');
+        $defaultLocale = config('filament-translations.default_local') ?? config('app.fallback_locale');
 
         if ($translation) {
             if (!$this->isCurrentTransForTranslationArray($translation, $defaultLocale)) {
@@ -78,7 +78,13 @@ class SaveScan
             $locals = config('filament-translations.locals');
             $text = [];
             foreach ($locals as $locale => $lang) {
-                $text[$locale] = Lang::get($mainKey,[],$locale);
+                if ($locale === $defaultLocale) {
+                    $text[$locale] = Lang::get($mainKey, [], $locale);
+                } else {
+                    // leave other locales empty, so the auto translations can identify and fill them
+                    // TODO: maybe we should add a config option to fill them with the default locale value
+                    $text[$locale] = '';
+                }
             }
             $translation = Translation::make([
                 'namespace' => $namespace,

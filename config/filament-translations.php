@@ -65,6 +65,17 @@ return [
         ],
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Default Locale
+    |--------------------------------------------------------------------------
+    |
+    | When generating language_line entries, use this locale as the default locale.
+    | If not set, the app's fallback_locale will be used.
+    |
+    */
+    "default_local" => null,
+
 
     /*
     |--------------------------------------------------------------------------
@@ -146,7 +157,7 @@ return [
      |
      */
     'translation_resource' => \TomatoPHP\FilamentTranslations\Resources\TranslationResource::class,
-  
+
     /*
      |--------------------------------------------------------------------------
      |
