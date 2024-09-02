@@ -30,10 +30,17 @@ class ScanWithGoogleTranslate implements ShouldQueue
 	public function handle(): void
 	{
 		$translator = new GoogleTranslate($this->language);
+        $defaultLocale = config('filament-translations.default_local') ?? config('app.fallback_locale');
 
-		Translation::chunk(200, function (Collection $translations) use ($translator) {
+		Translation::chunk(200, function (Collection $translations) use ($translator, $defaultLocale) {
 			foreach ($translations as $translation) {
-				$textToTranslate = $translation->text['en'] ?? $translation['key'];
+
+                // skip if translation already exists
+                if($translation->text[$this->language]) {
+                    continue;
+                }
+
+				$textToTranslate = $translation->text[$defaultLocale] ?? $translation['key'];
 				$translation->setTranslation($this->language, $translator->translate($textToTranslate));
 				$translation->save();
 			}
