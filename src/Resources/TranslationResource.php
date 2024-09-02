@@ -162,7 +162,7 @@ class TranslationResource extends Resource
         $validateAction = Tables\Actions\Action::make('validate')
             ->icon(fn(Translation $record) => $record->is_reviewed ? 'heroicon-o-x-circle' : 'heroicon-o-check-circle')
             ->color(fn(Translation $record) => $record->is_reviewed ? 'warning' : 'success')
-            ->label(fn(Translation $record) => $record->is_reviewed ? 'Mark as not reviewed' : 'Mark as reviewed')
+            ->label(fn(Translation $record) => $record->is_reviewed ? 'Mark as needs review' : 'Mark as reviewed')
             ->action(fn(Translation $record) => $record->update(['metadata' => ['is_reviewed' => !$record->is_reviewed]]));
 
         if (!config('filament-translations.modal')) {
