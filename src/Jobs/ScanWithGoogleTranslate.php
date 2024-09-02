@@ -35,8 +35,8 @@ class ScanWithGoogleTranslate implements ShouldQueue
 		Translation::chunk(200, function (Collection $translations) use ($translator, $defaultLocale) {
 			foreach ($translations as $translation) {
 
-                // skip if translation already exists
-                if($translation->text[$this->language]) {
+                // skip if translation already exists (and is not identical to the default locale)
+                if($translation->text[$this->language] && $translation->text[$this->language] !== $translation->text[$defaultLocale]) {
                     continue;
                 }
 

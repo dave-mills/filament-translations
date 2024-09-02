@@ -112,13 +112,15 @@ class Scan
         $trans = collect();
         $__ = collect();
         $excludedPaths = config('filament-translations.excludedPaths');
+        $excludedFileTypes = config('filament-translations.excludedFileTypes');
 
         // FIXME maybe we can count how many times one translation is used and eventually display it to the user
 
         /** @var SplFileInfo $file */
         foreach ($this->disk->allFiles($this->scannedPaths->toArray()) as $file) {
             $dir = dirname($file);
-            if(Str::startsWith($dir,$excludedPaths)) {
+
+            if(Str::startsWith($dir,$excludedPaths) || in_array($file->getExtension(),$excludedFileTypes)){
                 continue;
             }
 

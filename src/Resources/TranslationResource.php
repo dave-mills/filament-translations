@@ -63,6 +63,7 @@ class TranslationResource extends Resource
 
     public static function form(Form $form): Form
     {
+
         return $form->schema([
             Forms\Components\TextInput::make('group')
                 ->label(trans('filament-translations::translation.group'))
