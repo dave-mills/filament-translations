@@ -2,6 +2,7 @@
 
 namespace TomatoPHP\FilamentTranslations\Jobs;
 
+use Filament\Notifications\Events\DatabaseNotificationsSent;
 use Filament\Notifications\Notification;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Auth\Authenticatable;
@@ -49,6 +50,12 @@ class ScanWithGoogleTranslate implements ShouldQueue
 		Notification::make()
 			->title(trans('filament-translations::translation.google_scan_notifications_done'))
 			->success()
+            ->broadcast($this->user)
 			->sendToDatabase($this->user);
+
+        event(new DatabaseNotificationsSent($this->user));
+
+
+
 	}
 }
