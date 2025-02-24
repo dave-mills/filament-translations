@@ -10,10 +10,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Translation extends LanguageLine
 {
-    use HasFactory;
     use SoftDeletes;
 
-    public $translatable = ['text'];
+    public array $translatable = ['text'];
 
     /** @var array */
     public $guarded = ['id'];
