@@ -12,7 +12,7 @@ class Translation extends LanguageLine
 {
     use SoftDeletes;
 
-    public array $translatable = ['text'];
+    public $translatable = ['text'];
 
     /** @var array */
     public $guarded = ['id'];
